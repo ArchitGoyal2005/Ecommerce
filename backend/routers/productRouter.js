@@ -2,14 +2,19 @@ const express = require("express");
 const productController = require("../controllers/productController");
 const authController = require("../controllers/authController");
 const reviewRouter = require("./reviewRouter");
-const router = express.Router();
+const upload = require("../middlewares/multerMiddleware");
+const router = express.Router({ mergeParams: true });
 
 router.use("/:productId/reviews", reviewRouter);
 
 router
   .route("/")
-  .get(authController.protect, productController.getAllProducts)
-  .post(productController.createProduct);
+  .get(productController.getAllProducts)
+  .post(
+    upload.array("images", 7),
+    productController.uploadImages,
+    productController.createProduct
+  );
 
 router
   .route("/:id")

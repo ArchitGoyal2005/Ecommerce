@@ -46,6 +46,7 @@ exports.createOrder = catchAsync(async (req, res, next) => {
   });
 
   const data = await Order.create(orderDocuments);
+
   const responseData = data.map((doc) => ({
     ...doc.toJSON(),
     value: doc.value,

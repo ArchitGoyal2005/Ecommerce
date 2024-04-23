@@ -66,8 +66,9 @@ exports.getOne = (Model, populateOpt) =>
 exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
     let filter = {};
-    if (req.params.productId) filter = { product: req.params.productId };
-    if (req.params.userId) filter = { buyer: req.params.userId };
+    // if (req?.params.productId) filter = { product: req.params.productId };
+    // if (req?.user.role === "user") filter = { buyer: req.user.id };
+    // if (req?.user.role === "seller") filter = { seller: req.user.id };
 
     const features = new APIfeatures(Model.find(filter), req.query)
       .filter()

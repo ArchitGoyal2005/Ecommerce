@@ -1,9 +1,9 @@
 # Ignore node_modules directory
-backend/node_modules/
+node_modules/
 
 # Ignore environment-specific configuration files
-backend/config.env
+config.env
 
 # Ignore npm lock files
-backend/package-lock.json
+package-lock.json
 

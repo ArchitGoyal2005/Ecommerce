@@ -39,6 +39,10 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    reviewsQuantiy: {
+      type: Number,
+      default: 0,
+    },
     sellerChoice: {
       type: Boolean,
       default: false,
@@ -47,6 +51,16 @@ const productSchema = new mongoose.Schema(
       type: mongoose.Schema.ObjectId,
       ref: "User",
       require: [true, "A product must be listed by a seller"],
+    },
+    currentQuantity: {
+      type: Number,
+      default: 1,
+      require: [true, "A product must have a seller"],
+    },
+    discount: {
+      type: Number,
+      max: 100,
+      default: 0,
     },
   },
   {

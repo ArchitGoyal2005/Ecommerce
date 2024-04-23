@@ -5,7 +5,6 @@ const reviewSchema = new mongoose.Schema(
   {
     review: {
       type: String,
-      require: [true, "Enter a review"],
     },
     rating: {
       type: Number,
@@ -23,6 +22,14 @@ const reviewSchema = new mongoose.Schema(
       ref: "Product",
       require: [true, "A review must belong to a product"],
     },
+    likes: {
+      type: Number,
+      default: 0,
+    },
+    dislikes: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -36,7 +43,7 @@ reviewSchema.index({ product: 1, user: 1 }, { unique: true }); //to ensure one u
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: "user",
-    select: "name",
+    select: "name address.city",
   });
   next();
 });
@@ -51,6 +58,7 @@ reviewSchema.statics.calcAverageRating = async function (productId) {
         _id: "$product",
         nRating: { $sum: 1 },
         avgRating: { $avg: "$rating" },
+        nReviews: { $sum: { $cond: [{ $ne: ["$review", ""] }, 1, 0] } },
       },
     },
   ]);
@@ -58,11 +66,13 @@ reviewSchema.statics.calcAverageRating = async function (productId) {
     await Product.findByIdAndUpdate(productId, {
       ratingsAverage: stats[0].avgRating,
       ratingsQuantity: stats[0].nRating,
+      reviewsQuantity: stats[0].nReviews,
     });
   } else {
     await Product.findByIdAndUpdate(productId, {
       ratingsAverage: 4.5,
       ratingsQuantity: 0,
+      reviewsQuantity: 0,
     });
   }
 };

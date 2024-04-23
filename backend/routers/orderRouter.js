@@ -4,12 +4,16 @@ const authController = require("./../controllers/authController");
 
 const router = express.Router({ mergeParams: true });
 
-router.use(authController.protect, orderController.setBuyerIds);
+router.use(authController.protect);
 
 router
   .route("/")
   .get(orderController.getAllOrders)
-  .post(authController.restrictTo("user"), orderController.createOrder);
+  .post(
+    authController.restrictTo("user"),
+    orderController.setBuyerIds,
+    orderController.createOrder
+  );
 
 router
   .route("/:id")

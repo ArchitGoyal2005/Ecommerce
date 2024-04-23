@@ -64,6 +64,7 @@ const userSchema = new mongoose.Schema(
         },
         quantity: {
           type: Number,
+          default: 1,
           require: [true, "A product must have a quantity"],
         },
       },

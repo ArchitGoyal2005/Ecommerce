@@ -4,12 +4,13 @@ const authController = require("./../controllers/authController");
 
 const router = express.Router({ mergeParams: true });
 
-router.use(authController.protect, reviewController.setProductUserIds);
+router.get("/ratingByStars", reviewController.getRatingsByStars);
+router.use(reviewController.setProductUserIds);
 
 router
   .route("/")
   .get(reviewController.getAllReviews)
-  .post(authController.restrictTo("user"), reviewController.createReview);
+  .post(reviewController.createReview);
 
 router
   .route("/:id")

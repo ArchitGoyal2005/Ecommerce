@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Product = require("./productModel");
 const AppError = require("../utils/AppError");
+const { ObjectId } = require("mongodb");
 
 const orderSchema = new mongoose.Schema(
   {
@@ -40,10 +41,15 @@ const orderSchema = new mongoose.Schema(
         },
       },
     ],
-    estimatedDelivery: Date,
   },
   {
-    toJSON: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: (_, returningDoc) => {
+        returningDoc["id"] = returningDoc["_id"];
+        delete returningDoc["_id"];
+      },
+    },
     toObject: { virtuals: true },
     timestamps: true,
   }
@@ -53,7 +59,10 @@ orderSchema.pre("save", async function (next) {
   if (!this.isModified("productDetails")) return next();
   const promises = this.productDetails.map(async (detail) => {
     const product = await Product.findById(detail.product);
-    return product.price * detail.quantity;
+    return (
+      Math.round(product.price - (product.price * product.discount) / 100) *
+      detail.quantity
+    );
   });
   const prices = await Promise.all(promises);
   const actualValue = prices.reduce((acc, curr) => acc + curr, 0);
@@ -70,6 +79,7 @@ orderSchema.pre("save", async function (next) {
 
 orderSchema.pre(/^find/, async function (next) {
   // this.populate({ path: "buyer" });
+  // console.log(this.getQuery());
   next();
 });
 
